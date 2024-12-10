@@ -1,72 +1,84 @@
 package no.hiof.hmh.domain.model;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import java.time.LocalDateTime;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.stream.Stream;
 
 @ExtendWith(MockitoExtension.class)
 public class RiskTest {
 
-    @Mock 
-    Consequence mockConsequence;
+    @Mock
+    private Scenario mockScenario;
 
-    @Mock 
-    Probability mockProbability;
+    @Mock
+    private Probability mockProbability;
 
-    @Mock 
-    Scenario mockScenario;
+    @Mock
+    private Consequence mockConsequence;
 
+    @ParameterizedTest
+    @CsvSource({
+        "3, 4, 12",
+        "2, 5, 10",
+        "1, 1, 1"
+    })
+    @DisplayName("Test constructor with parameters")
+    public void testConstructorWithParameters(int consequenceValue, int probabilityValue, int expectedNumericRiskValue) {
+        // Arrange
+        when(mockConsequence.getNumericValue()).thenReturn(consequenceValue);
+        when(mockProbability.getNumericValue()).thenReturn(probabilityValue);
 
-    @Test
-    @DisplayName("Tes of default constructor")
-    public void testDefaultConstructor() {
+        // Act
+        Risk risk = new Risk(mockScenario, mockProbability, mockConsequence);
 
-        //Arrange and act
-        Risk risk = new Risk();
-
-        //Assert
-        assertNotNull(risk, "Should not be a null value");
-    }
-
-    @Test
-    @DisplayName("Test of constructor with parameters")
-    public void testConstructorWithParameters() {
-        //Arrange
-        when(mockConsequence.getNumericValue()).thenReturn(3);
-        when(mockProbability.getNumericValue()).thenReturn(4);
-        
-        //Act
-        Risk risk = new Risk(mockScenario,
-                             mockProbability,
-                             mockConsequence);
-        
-        //Assert
-        int expectedNumericRiskValue = 12;
+        // Assert
         assertAll(
-            () -> assertNotNull(risk, "Risk should not return av null value"),
+            () -> assertNotNull(risk, "Risk should not return a null value"),
             () -> assertNotNull(mockProbability, "Probability should not be a null value"),
             () -> assertNotNull(mockConsequence, "Consequence should not be a null value"),
             () -> assertNotNull(mockScenario, "Scenario should not be a null value"),
-            () -> assertEquals(expectedNumericRiskValue, risk.getNumericValue(), 
-            "The numeric risk value should be:" + expectedNumericRiskValue),
-            () -> assertEquals(expectedNumericRiskValue, risk.getNumericValue())
+            () -> assertEquals(expectedNumericRiskValue, risk.getNumericValue(), "The numeric risk value should be: " + expectedNumericRiskValue)
         );
     }
 
-    @Test 
+    @Test
     @DisplayName("Test of constructor with null parameters")
     public void testConstructorWithNullParameters() {
-
         assertThrows(IllegalArgumentException.class, () -> {
             new Risk(null, null, null);
         });
+    }
 
+    @ParameterizedTest
+    @MethodSource("provideInvalidParameters")
+    @DisplayName("Test constructor with invalid parameters")
+    public void testConstructorWithInvalidParameters(Scenario scenario, Probability probability, Consequence consequence) {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Risk(scenario, probability, consequence);
+        });
+    }
+
+    private static Stream<Arguments> provideInvalidParameters() {
+        return Stream.of(
+            Arguments.of(null, mock(Probability.class), mock(Consequence.class)),
+            Arguments.of(mock(Scenario.class), null, mock(Consequence.class)),
+            Arguments.of(mock(Scenario.class), mock(Probability.class), null),
+            Arguments.of(null, null, null)
+        );
     }
 }
