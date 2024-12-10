@@ -22,6 +22,7 @@ public class MainTest {
         System.setOut(originalOut);
 
         // Check the output
-        assertEquals("Hello world!\n", outContent.toString());
+        String expectedOutput = "Hello world!" + System.lineSeparator();
+        assertEquals(expectedOutput, outContent.toString());
     }
 }
