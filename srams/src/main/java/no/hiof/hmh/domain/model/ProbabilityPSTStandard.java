@@ -8,7 +8,6 @@ public class ProbabilityPSTStandard implements Probability {
     public ProbabilityPSTStandard(int numericValue,
                                   String percentage) {
 
-        if(numericValue > 1)
         this.numericValue = numericValue;
         this.percentage = percentage;
     }
