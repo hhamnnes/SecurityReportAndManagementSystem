@@ -39,7 +39,6 @@ public class RiskTest {
     @DisplayName("Test of constructor with parameters")
     public void testConstructorWithParameters() {
         //Arrange
-        String riskID = "1";
         when(mockConsequence.getNumericValue()).thenReturn(3);
         when(mockProbability.getNumericValue()).thenReturn(4);
         
@@ -55,10 +54,9 @@ public class RiskTest {
             () -> assertNotNull(mockProbability, "Probability should not be a null value"),
             () -> assertNotNull(mockConsequence, "Consequence should not be a null value"),
             () -> assertNotNull(mockScenario, "Scenario should not be a null value"),
-            () -> assertEquals(expectedNumericRiskValue, risk.getNumericValue, 
+            () -> assertEquals(expectedNumericRiskValue, risk.getNumericValue(), 
             "The numeric risk value should be:" + expectedNumericRiskValue),
-            () -> assertEquals("1", risk.getNumericValue),
-            () -> assertEquals(anyInt(), risk.getID())
+            () -> assertEquals(expectedNumericRiskValue, risk.getNumericValue())
         );
     }
 
